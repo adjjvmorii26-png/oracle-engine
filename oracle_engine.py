@@ -93,7 +93,9 @@ def _analyze_perspective(question: str, perspective_key: str) -> Dict[str, Any]:
     # Generate analysis dimensions based on perspective weights
     dimensions = {}
     for dim, weight in p["weights"].items():
-        dimensions[dim] = round(weight * 0.8 + (hash(question + dim + perspective_key) % 100) / 500, 3)
+        digest = hashlib.sha256(f"{question}|{dim}|{perspective_key}".encode()).digest()
+        jitter = int.from_bytes(digest[:4], "big") % 100 / 500
+        dimensions[dim] = round(weight * 0.8 + jitter, 3)
 
     # Confidence based on how well the perspective fits the question
     fit_score = sum(dimensions.values()) / len(dimensions)
