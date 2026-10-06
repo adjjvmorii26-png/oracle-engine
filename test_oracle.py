@@ -1,11 +1,18 @@
 """Tests for Oracle Engine."""
 import pytest
-from oracle_engine import OracleEngine, PERSPECTIVES, _hash
+from oracle_engine import OracleEngine, PERSPECTIVES, _hash, _analyze_perspective
 
 
 def test_hash_is_deterministic():
     assert _hash("a", "b") == _hash("a", "b")
     assert _hash("a", "b") != _hash("a", "c")
+
+
+def test_analysis_is_reproducible():
+    first = _analyze_perspective("same question", "scientist")
+    second = _analyze_perspective("same question", "scientist")
+    assert first["dimensions"] == second["dimensions"]
+    assert first["confidence"] == second["confidence"]
 
 
 def test_perspectives_complete():
